@@ -98,7 +98,7 @@ class CRM_Speakcivi_Logic_Activity {
    *
    * @throws \CiviCRM_API3_Exception
    */
-  public static function setSourceFields($activityId, $fields) {
+  public static function setUtm($activityId, $fields) {
     $params = array(
       'sequential' => 1,
       'id' => $activityId,
