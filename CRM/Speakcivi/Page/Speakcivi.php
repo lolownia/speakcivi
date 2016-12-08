@@ -160,9 +160,6 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
    */
   public function petition($param) {
     $contact = $this->createContact($param);
-    if ($this->newContact) {
-      $this->setContactCreatedDate($contact['id'], $param->create_dt);
-    }
 
     $optInForActivityStatus = $this->optIn;
     if (!$this->isContactNeedConfirmation($this->newContact, $contact['id'], $contact['values'][0]['is_opt_out'])) {
@@ -177,6 +174,9 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
     $activityStatus = $optInMapActivityStatus[$optInForActivityStatus];
     $activity = $this->createActivity($param, $contact['id'], 'Petition', $activityStatus);
     CRM_Speakcivi_Logic_Activity::setSourceFields($activity['id'], @$param->source);
+    if ($this->newContact) {
+      CRM_Speakcivi_Logic_Contact::setContactCreatedDate($contact['id'], $activity['values'][0]['activity_date_time']);
+    }
 
     if ($this->optIn == 1) {
       $h = $param->cons_hash;
@@ -209,11 +209,11 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
   public function donate($param) {
     if ($param->metadata->status == "success") {
       $contact = $this->createContact($param);
-      if ($this->newContact) {
-      	$this->setContactCreatedDate($contact['id'], $param->create_dt);
-      }
       $contribution = CRM_Speakcivi_Logic_Contribution::create($param, $contact['id'], $this->campaignId);
       CRM_Speakcivi_Logic_Contribution::setUtm($contribution['id'], @$param->source);
+      if ($this->newContact) {
+        CRM_Speakcivi_Logic_Contact::setContactCreatedDate($contact['id'], $contribution['values'][0]['receive_date']);
+      }
       return true;
     } else {
       return false;
@@ -639,37 +639,5 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
       }
     }
     return false;
-  }
-
-
-  /**
-   * Set up own created date. Column created_date is kind of timestamp and therefore It can't be set up during creating new contact.
-   *
-   * @param $contactId
-   * @param $createdDate
-   *
-   * @return bool
-   *
-   */
-  public function setContactCreatedDate($contactId, $createdDate) {
-    $format = 'Y-m-d\TH:i:s.uP';
-    $dt = DateTime::createFromFormat($format, $createdDate);
-    $time = explode(':', $dt->getTimezone()->getName());
-    $hours = $time[0];
-    $mins = $time[1];
-    $sign = substr($dt->getTimezone()->getName(), 0, 1);
-
-    if (!($hours == "Z")) {
-    $dt->modify("{$hours} hour {$sign}{$mins} minutes");
-    // todo temporary solution https://github.com/WeMoveEU/speakcivi/issues/48
-    $dt->modify("+1 hour");
-    }
-
-    $query = "UPDATE civicrm_contact SET created_date = %2 WHERE id = %1";
-    $params = array(
-      1 => array($contactId, 'Integer'),
-      2 => array($dt->format("Y-m-d H:i:s"), 'String'),
-    );
-    CRM_Core_DAO::executeQuery($query, $params);
   }
 }

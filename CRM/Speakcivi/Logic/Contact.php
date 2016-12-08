@@ -52,7 +52,7 @@ class CRM_Speakcivi_Logic_Contact {
    * @param $contactId
    * @param $createdDate
    *
-   * @return bool
+   * @return void
    *
    */
   public static function setContactCreatedDate($contactId, $createdDate) {
