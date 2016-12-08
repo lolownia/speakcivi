@@ -231,7 +231,6 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
    */
   public function createContact($param) {
     $h = $param->cons_hash;
-
     $contact = array(
       'sequential' => 1,
       'contact_type' => 'Individual',
@@ -247,22 +246,25 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
       ),
       'return' => 'id,email,first_name,last_name',
     );
-    $result = civicrm_api3('Contact', 'get', $contact);
-
-    if ($result['count'] == 1) {
-      $contact = $this->prepareParamsContact($param, $contact, $result, $result['values'][0]['id']);
-    } elseif ($result['count'] > 1) {
-      $lastname = $this->cleanLastname($h->lastname);
-      $new_contact = $contact;
-      $new_contact['first_name'] = $h->firstname;
-      $new_contact['last_name'] = $lastname;
-      $similarity = $this->glueSimilarity($new_contact, $result['values']);
-      unset($new_contact);
-      $contactIdBest = $this->chooseBestContact($similarity);
-      $contact = $this->prepareParamsContact($param, $contact, $result, $contactIdBest);
+    $contacIds = CRM_Speakcivi_Logic_Contact::getContactByEmail($h->emails[0]->email);
+    if (is_array($contacIds) && count($contacIds) > 0) {
+      $contact['id'] = array('IN' => array_keys($contacIds));
+      $result = civicrm_api3('Contact', 'get', $contact);
+      if ($result['count'] == 1) {
+        $contact = $this->prepareParamsContact($param, $contact, $result, $result['values'][0]['id']);
+      } elseif ($result['count'] > 1) {
+        $lastname = $this->cleanLastname($h->lastname);
+        $newContact = $contact;
+        $newContact['first_name'] = $h->firstname;
+        $newContact['last_name'] = $lastname;
+        $similarity = $this->glueSimilarity($newContact, $result['values']);
+        unset($newContact);
+        $contactIdBest = $this->chooseBestContact($similarity);
+        $contact = $this->prepareParamsContact($param, $contact, $result, $contactIdBest);
+      }
     } else {
       $this->newContact = true;
-      $contact = $this->prepareParamsContact($param, $contact, $result);
+      $contact = $this->prepareParamsContact($param, $contact);
     }
     return civicrm_api3('Contact', 'create', $contact);
   }
@@ -328,7 +330,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
    *
    * @return mixed
    */
-  function prepareParamsContact($param, $contact, $result, $basedOnContactId = 0) {
+  function prepareParamsContact($param, $contact, $result = array(), $basedOnContactId = 0) {
     $h = $param->cons_hash;
 
     $optInMapGroupStatus = array(
