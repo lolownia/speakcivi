@@ -92,8 +92,8 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
         break;
 
       case 'donate':
-	$this->donate($param);
-	break;
+        $this->donate($param);
+        break;
 
       case 'tweet':
         $this->tweet($param);
@@ -103,10 +103,8 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
         $this->call($param);
         break;
 
-
       default:
     }
-
   }
 
 
@@ -232,26 +230,21 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
 
   }
 
-  public function bark($text) {
-   $fh = fopen("/tmp/civi.log", "a");
-   fwrite($fh, $text . "\n");
-   fclose($fh);
-  }
 
   /**
    * Create a transaction for donation
    *
    * @param $param
+   *
+   * @return bool
    */
   public function donate($param) {
-
     if ($param->metadata->status == "success") {
       $contact = $this->createContact($param);
       if ($this->newContact) {
       	$this->setContactCreatedDate($contact['id'], $param->create_dt);
       }
-
-      $contribution = $this->createContribution($param, $contact["id"]);
+      $this->createContribution($param, $contact["id"]);
       return true;
     } else {
       return false;
@@ -263,10 +256,12 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
    * Create a transaction entity
    *
    * @param $param
+   * @param $contactId
+   *
+   * @return
    */
   public function createContribution($param, $contactId) {
     $financialTypeId = 1; // How to fetch it by name? No documentation mentions this, so it remains hardcoded, yey!
-
     $params = array(
       'source_contact_id' => $contactId,
       'contact_id' => $contactId,
@@ -283,11 +278,9 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
       'subject' => $param->action_name,
       'location' => $param->action_technical_type,
     );
-
     return civicrm_api3('Contribution', 'create', $params);
   }
 
-    
 
   /**
    * Create or update contact
@@ -332,9 +325,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
       $this->newContact = true;
       $contact = $this->prepareParamsContact($param, $contact, $result);
     }
-
     return civicrm_api3('Contact', 'create', $contact);
-
   }
 
 
