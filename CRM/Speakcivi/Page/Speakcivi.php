@@ -95,6 +95,15 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
 	$this->donate($param);
 	break;
 
+      case 'tweet':
+        $this->tweet($param);
+        break;
+
+      case 'call':
+        $this->call($param);
+        break;
+
+
       default:
     }
 
@@ -200,6 +209,29 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
 
   }
 
+  /**
+   * Create a representative mail activity
+   *
+   * @param $param
+   */
+  public function tweet($param) {
+
+    $contact = $this->createContact($param);
+    $activity = $this->createActivity($param, $contact['id'], 'Tweet', 'Completed');
+
+  }
+
+  /**
+   * Create a representative mail activity
+   *
+   * @param $param
+   */
+  public function call($param) {
+    $contact = $this->createContact($param);
+    $activity = $this->createActivity($param, $contact['id'], 'Call', 'Completed');
+
+  }
+
   public function bark($text) {
    $fh = fopen("/tmp/civi.log", "a");
    fwrite($fh, $text . "\n");
@@ -235,7 +267,6 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
   public function createContribution($param, $contactId) {
     $financialTypeId = 1; // How to fetch it by name? No documentation mentions this, so it remains hardcoded, yey!
 
-    $this->bark("Campaign: " . $this->campaignId);
     $params = array(
       'source_contact_id' => $contactId,
       'contact_id' => $contactId,
