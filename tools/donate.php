@@ -19,8 +19,8 @@ $config = CRM_Core_Config::singleton();
 
 // message from Speakout
 $param = (object)array(
-  'action_type' => 'petition',
-  'action_technical_type' => 'dzialaj.akcjademokracja.pl:petition',
+  'action_type' => 'donate',
+  'action_technical_type' => 'dzialaj.akcjademokracja.pl:donate',
   'create_dt' => '2016-12-08T11:56:59.617+01:00',
   'action_name' => 'Testowa kampania',
   'external_id' => 130,
@@ -29,7 +29,7 @@ $param = (object)array(
     'lastname' => 'Pietrzkowski',
     'emails' => array(
       0 => (object)array(
-        'email' => 'scardinius@chords.pl',
+        'email' => 'scardinius3@chords.pl',
       )
     ),
     'addresses' => array(
@@ -39,11 +39,21 @@ $param = (object)array(
       ),
     ),
   ),
+  'metadata' => (object)array(
+    'amount' => 2000,
+    'amount_charged' => 50,
+    'currency' => 'PLN',
+    'card_type' => 'visa',
+    'payment_processor' => 'stripe',
+    'transaction_id' => 'tx1234567',
+    'description' => 'Some client description if available',
+    'status' => 'success',
+  ),
   'utm' => (object)array(
-    'source' => 'ssss1',
-    'medium' => 'mmmm2',
-    'campaign' => 'ccc3',
-    'content' => 'coco4',
+    'source' => 'donate-ssss1',
+    'medium' => 'donate-mmmm2',
+    'campaign' => 'donate-ccc3',
+    'content' => 'donate-coco4',
   ),
 );
 
