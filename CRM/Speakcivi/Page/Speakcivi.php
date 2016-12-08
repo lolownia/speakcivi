@@ -162,7 +162,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
     $contact = $this->createContact($param);
 
     $optInForActivityStatus = $this->optIn;
-    if (!$this->isContactNeedConfirmation($this->newContact, $contact['id'], $contact['values'][0]['is_opt_out'])) {
+    if (!CRM_Speakcivi_Logic_Contact::isContactNeedConfirmation($this->newContact, $contact['id'], $this->groupId, $contact['values'][0]['is_opt_out'])) {
       $this->confirmationBlock = false;
       $optInForActivityStatus = 0;
     }
@@ -611,33 +611,5 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
       'confirmation_block' => $confirmationBlock,
     );
     return civicrm_api3("Speakcivi", "sendconfirm", $params);
-  }
-
-
-  /**
-   * Check If contact need send email confirmation.
-   *
-   * @param $newContact
-   * @param $contactId
-   * @param $isOptOut
-   *
-   * @return bool
-   *
-   */
-  public function isContactNeedConfirmation($newContact, $contactId, $isOptOut) {
-    if ($newContact || $isOptOut) {
-      return true;
-    } else {
-      $params = array(
-        'sequential' => 1,
-        'contact_id' => $contactId,
-        'group_id' => $this->groupId,
-      );
-      $result = civicrm_api3('GroupContact', 'get', $params);
-      if ($result['count'] == 0) {
-        return true;
-      }
-    }
-    return false;
   }
 }
