@@ -83,16 +83,16 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
         $this->petition($param);
         break;
 
+      case 'donate':
+        $this->donate($param);
+        break;
+
       case 'share':
         $this->addActivity($param, 'share');
         break;
 
       case 'speakout':
         $this->addActivity($param, 'Email');
-        break;
-
-      case 'donate':
-        $this->donate($param);
         break;
 
       case 'tweet':
