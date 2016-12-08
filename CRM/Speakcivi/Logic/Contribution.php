@@ -15,6 +15,7 @@ class CRM_Speakcivi_Logic_Contribution {
     // todo get from settings?
     $financialTypeId = 1;
     $params = array(
+      'sequential' => 1,
       'source_contact_id' => $contactId,
       'contact_id' => $contactId,
       'contribution_campaign_id' => $campaignId,
