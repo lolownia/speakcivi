@@ -209,41 +209,12 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
       if ($this->newContact) {
       	$this->setContactCreatedDate($contact['id'], $param->create_dt);
       }
-      $this->createContribution($param, $contact["id"]);
+      $contribution = CRM_Speakcivi_Logic_Contribution::create($param, $contact['id'], $this->campaignId);
+      CRM_Speakcivi_Logic_Contribution::setUtm($contribution['id'], @$param->source);
       return true;
     } else {
       return false;
     }
-  }
-
-
-  /**
-   * Create a transaction entity
-   *
-   * @param $param
-   * @param $contactId
-   *
-   * @return
-   */
-  public function createContribution($param, $contactId) {
-    $financialTypeId = 1; // How to fetch it by name? No documentation mentions this, so it remains hardcoded, yey!
-    $params = array(
-      'source_contact_id' => $contactId,
-      'contact_id' => $contactId,
-      'contribution_campaign_id' => $this->campaignId,
-      'financial_type_id' => $financialTypeId,
-      'receive_date' => $param->create_dt,
-      'total_amount' => $param->metadata->amount / 100,
-      'fee_amount' => $param->metadata->amount_charged / 100,
-      'net_amount' => ($param->metadata->amount - $param->metadata->amount_charged) / 100,
-      'trxn_id' => $param->metadata->transaction_id,
-      'contribution_status' => 'Completed',
-      'currency' => $param->metadata->currency,
-      
-      'subject' => $param->action_name,
-      'location' => $param->action_technical_type,
-    );
-    return civicrm_api3('Contribution', 'create', $params);
   }
 
 
