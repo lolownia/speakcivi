@@ -84,11 +84,11 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
         break;
 
       case 'share':
-        $this->share($param);
+        $this->addActivity($param, 'share');
         break;
 
       case 'speakout':
-        $this->mail($param);
+        $this->addActivity($param, 'Email');
         break;
 
       case 'donate':
@@ -96,11 +96,11 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
         break;
 
       case 'tweet':
-        $this->tweet($param);
+        $this->addActivity($param, 'Tweet');
         break;
 
       case 'call':
-        $this->call($param);
+        $this->addActivity($param, 'Call');
         break;
 
       default:
@@ -184,50 +184,16 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
 
 
   /**
-   * Create a sharing activity
+   * Create a activity
    *
-   * @param $param
+   * @param array $param Params from speakout
+   * @param string $type Type name of activity
+   * @param string $status Status name of activity
    */
-  public function share($param) {
-
+  public function addActivity($param, $type, $status = 'Completed') {
     $contact = $this->createContact($param);
-    $activity = $this->createActivity($param, $contact['id'], 'share', 'Completed');
-
-  }
-
-  /**
-   * Create a representative mail activity
-   *
-   * @param $param
-   */
-  public function mail($param) {
-
-    $contact = $this->createContact($param);
-    $activity = $this->createActivity($param, $contact['id'], 'Email', 'Completed');
-
-  }
-
-  /**
-   * Create a representative mail activity
-   *
-   * @param $param
-   */
-  public function tweet($param) {
-
-    $contact = $this->createContact($param);
-    $activity = $this->createActivity($param, $contact['id'], 'Tweet', 'Completed');
-
-  }
-
-  /**
-   * Create a representative mail activity
-   *
-   * @param $param
-   */
-  public function call($param) {
-    $contact = $this->createContact($param);
-    $activity = $this->createActivity($param, $contact['id'], 'Call', 'Completed');
-
+    $activity = $this->createActivity($param, $contact['id'], $type, $status);
+    CRM_Speakcivi_Logic_Activity::setSourceFields($activity['id'], @$param->source);
   }
 
 
