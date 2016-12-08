@@ -567,6 +567,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
     $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', $activityType, 'name', 'String', 'value');
     $activityStatusId = CRM_Core_OptionGroup::getValue('activity_status', $activityStatus, 'name', 'String', 'value');
     $params = array(
+      'sequential' => 1,
       'source_contact_id' => $contactId,
       'source_record_id' => $param->external_id,
       'campaign_id' => $this->campaignId,
