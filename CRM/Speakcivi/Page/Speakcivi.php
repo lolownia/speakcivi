@@ -156,7 +156,6 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
    * @param $param
    */
   public function petition($param) {
-
     $contact = $this->createContact($param);
     if ($this->newContact) {
       $this->setContactCreatedDate($contact['id'], $param->create_dt);
@@ -174,12 +173,12 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
     );
     $activityStatus = $optInMapActivityStatus[$optInForActivityStatus];
     $activity = $this->createActivity($param, $contact['id'], 'Petition', $activityStatus);
+    CRM_Speakcivi_Logic_Activity::setSourceFields($activity['id'], @$param->source);
 
     if ($this->optIn == 1) {
       $h = $param->cons_hash;
       $this->sendConfirm($h->emails[0]->email, $contact['id'], $activity['id'], $this->campaignId, $this->confirmationBlock);
     }
-
   }
 
 
