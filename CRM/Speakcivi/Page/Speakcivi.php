@@ -173,7 +173,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
     );
     $activityStatus = $optInMapActivityStatus[$optInForActivityStatus];
     $activity = $this->createActivity($param, $contact['id'], 'Petition', $activityStatus);
-    CRM_Speakcivi_Logic_Activity::setUtm($activity['id'], @$param->utm);
+    CRM_Speakcivi_Logic_Activity::setUtm($activity['id'], @$param->source);
     if ($this->newContact) {
       CRM_Speakcivi_Logic_Contact::setContactCreatedDate($contact['id'], $activity['values'][0]['activity_date_time']);
     }
@@ -195,7 +195,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
   public function addActivity($param, $type, $status = 'Completed') {
     $contact = $this->createContact($param);
     $activity = $this->createActivity($param, $contact['id'], $type, $status);
-    CRM_Speakcivi_Logic_Activity::setUtm($activity['id'], @$param->utm);
+    CRM_Speakcivi_Logic_Activity::setUtm($activity['id'], @$param->source);
   }
 
 
@@ -210,7 +210,7 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
     if ($param->metadata->status == "success") {
       $contact = $this->createContact($param);
       $contribution = CRM_Speakcivi_Logic_Contribution::create($param, $contact['id'], $this->campaignId);
-      CRM_Speakcivi_Logic_Contribution::setUtm($contribution['id'], @$param->utm);
+      CRM_Speakcivi_Logic_Contribution::setUtm($contribution['id'], @$param->source);
       if ($this->newContact) {
         CRM_Speakcivi_Logic_Contact::setContactCreatedDate($contact['id'], $contribution['values'][0]['receive_date']);
       }
