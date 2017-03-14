@@ -207,17 +207,13 @@ class CRM_Speakcivi_Page_Speakcivi extends CRM_Core_Page {
    * @return bool
    */
   public function donate($param) {
-    if ($param->metadata->status == "success") {
-      $contact = $this->createContact($param);
-      $contribution = CRM_Speakcivi_Logic_Contribution::create($param, $contact['id'], $this->campaignId);
-      CRM_Speakcivi_Logic_Contribution::setUtm($contribution['id'], @$param->source);
-      if ($this->newContact) {
-        CRM_Speakcivi_Logic_Contact::setContactCreatedDate($contact['id'], $contribution['values'][0]['receive_date']);
-      }
-      return true;
-    } else {
-      return false;
+    $contact = $this->createContact($param);
+    $contribution = CRM_Speakcivi_Logic_Contribution::set($param, $contact['id'], $this->campaignId);
+    CRM_Speakcivi_Logic_Contribution::setUtm($contribution['id'], @$param->source);
+    if ($this->newContact) {
+      CRM_Speakcivi_Logic_Contact::setContactCreatedDate($contact['id'], $contribution['values'][0]['receive_date']);
     }
+    return true;
   }
 
 
