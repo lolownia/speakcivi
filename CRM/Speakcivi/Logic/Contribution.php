@@ -4,6 +4,8 @@ class CRM_Speakcivi_Logic_Contribution {
 
   private static $financialTypeId = 1;
 
+  private static $paymentMethod = 6;
+
   private static $frequencyInterval = 1;
 
   private static $frequencyUnit = 'month';
@@ -54,6 +56,7 @@ class CRM_Speakcivi_Logic_Contribution {
       'contact_id' => $contactId,
       'contribution_campaign_id' => $campaignId,
       'financial_type_id' => self::$financialTypeId,
+      'payment_instrument_id' => self::$paymentMethod,
       'receive_date' => $param->create_dt,
       'total_amount' => $param->metadata->amount / 100,
       'fee_amount' => $param->metadata->amount_charged / 100,
@@ -134,6 +137,7 @@ class CRM_Speakcivi_Logic_Contribution {
       'trxn_id' => $param->metadata->recurring_id,
       'contribution_status_id' => self::determineRecurringStatus($param->metadata->status),
       'financial_type_id' => self::$financialTypeId,
+      'payment_instrument_id' => self::$paymentMethod,
       'campaign_id' => $campaignId,
     );
     if ($param->metadata->status == 'destroy') {
