@@ -32,10 +32,48 @@ class CRM_Speakcivi_Logic_Contribution {
   public static function set($param, $contactId, $campaignId) {
     if (self::isRecurring($param->metadata->recurring_id)) {
       $recurId = self::setRecurring($param, $contactId, $campaignId);
-      return self::create($param, $contactId, $campaignId, $recurId);
+      return self::setOne($param, $contactId, $campaignId, $recurId);
     } else {
-      return self::create($param, $contactId, $campaignId);
+      return self::setOne($param, $contactId, $campaignId);
     }
+  }
+
+
+  /**
+   * Set contribution.
+   *
+   * @param object $param
+   * @param int $contactId
+   * @param int $campaignId
+   * @param int $recurId
+   *
+   * @return array
+   */
+  private static function setOne($param, $contactId, $campaignId, $recurId = 0) {
+    if (!$contrib = self::find($param->metadata->transaction_id)) {
+      return self::create($param, $contactId, $campaignId, $recurId);
+    }
+    return $contrib;
+  }
+
+
+  /**
+   * Find contribution by unique transaction id.
+   *
+   * @param string $transactionId
+   *
+   * @return array
+   */
+  private static function find($transactionId) {
+    $params = array(
+      'sequential' => 1,
+      'trxn_id' => $transactionId,
+    );
+    $result = civicrm_api3('Contribution', 'get', $params);
+    if ($result['count'] == 1) {
+      return $result;
+    }
+    return array();
   }
 
 
