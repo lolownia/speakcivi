@@ -90,7 +90,6 @@ class CRM_Speakcivi_Logic_Contribution {
   private static function create($param, $contactId, $campaignId, $recurId = 0) {
     $params = array(
       'sequential' => 1,
-      'source_contact_id' => $contactId,
       'contact_id' => $contactId,
       'contribution_campaign_id' => $campaignId,
       'financial_type_id' => self::$financialTypeId,
@@ -102,8 +101,7 @@ class CRM_Speakcivi_Logic_Contribution {
       'trxn_id' => $param->metadata->transaction_id,
       'contribution_status_id' => self::determineStatus($param->metadata->status),
       'currency' => $param->metadata->currency,
-      'subject' => $param->action_name,
-      'location' => $param->action_technical_type,
+      'note' => $param->description,
     );
     if ($recurId) {
       $params['contribution_recur_id'] = $recurId;
