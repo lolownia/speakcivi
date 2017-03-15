@@ -100,7 +100,7 @@ class CRM_Speakcivi_Logic_Contribution {
       'fee_amount' => $param->metadata->amount_charged / 100,
       'net_amount' => ($param->metadata->amount / 100 - $param->metadata->amount_charged / 100),
       'trxn_id' => $param->metadata->transaction_id,
-      'contribution_status' => self::determineStatus($param->metadata->status),
+      'contribution_status_id' => self::determineStatus($param->metadata->status),
       'currency' => $param->metadata->currency,
       'subject' => $param->action_name,
       'location' => $param->action_technical_type,
