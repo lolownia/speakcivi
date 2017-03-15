@@ -108,6 +108,9 @@ class CRM_Speakcivi_Logic_Contribution {
     if ($recurId) {
       $params['contribution_recur_id'] = $recurId;
     }
+    if ($param->metadata->status == 'destroy') {
+      $params['cancel_date'] = $param->create_dt;
+    }
     return civicrm_api3('Contribution', 'create', $params);
   }
 
