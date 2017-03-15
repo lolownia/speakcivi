@@ -4,9 +4,18 @@ class CRM_Speakcivi_Logic_Contribution {
 
   private static $financialTypeId = 1;
 
+  private static $frequencyInterval = 1;
+
+  private static $frequencyUnit = 'month';
+
   private static $mapStatus = array(
-    'success' => 2,
-    'destroy' => 3,
+    'success' => 1, // completed
+    'destroy' => 3, // cancelled
+  );
+
+  private static $mapRecurringStatus = array(
+    'success' => 2, // pending
+    'destroy' => 3, // cancelled
   );
 
   /**
@@ -62,12 +71,21 @@ class CRM_Speakcivi_Logic_Contribution {
   }
 
 
+  /**
+   * Set recurring contribution.
+   *
+   * @param object $param
+   * @param int $contactId
+   * @param int $campaignId
+   *
+   * @return mixed
+   */
   private static function setRecurring($param, $contactId, $campaignId) {
     if (!$recur = self::findRecurring($param->metadata->recurring_id)) {
       $recur = self::createRecurring($param, $contactId, $campaignId);
     } else {
-      if ($recur['values'][0]['contribution_status_id'] != self::determineStatus($param->metadata->status)) {
-        self::setRecurringStatus($recur['id'], self::determineStatus($param->metadata->status));
+      if ($recur['values'][0]['contribution_status_id'] != self::determineRecurringStatus($param->metadata->status)) {
+        self::setRecurringStatus($param, $recur['id']);
       }
     }
     return $recur['id'];
@@ -95,10 +113,62 @@ class CRM_Speakcivi_Logic_Contribution {
 
 
   /**
+   * Create new recurring contribution.
+   *
+   * @param object $param
+   * @param int $contactId
+   * @param int $campaignId
+   *
+   * @return mixed
+   */
+  private static function createRecurring($param, $contactId, $campaignId) {
+    $params = array(
+      'sequential' => 1,
+      'contact_id' => $contactId,
+      'amount' => $param->metadata->amount,
+      'currency' => $param->metadata->currency,
+      'frequency_unit' => self::$frequencyUnit,
+      'frequency_interval' => self::$frequencyInterval,
+      'start_date' => $param->create_dt,
+      'create_date' => $param->create_dt,
+      'trxn_id' => $param->metadata->recurring_id,
+      'contribution_status_id' => self::determineRecurringStatus($param->metadata->status),
+      'financial_type_id' => self::$financialTypeId,
+      'campaign_id' => $campaignId,
+    );
+    if ($param->metadata->status == 'destroy') {
+      $params['cancel_date'] = $param->create_dt;
+    }
+    return civicrm_api3('ContributionRecur', 'create', $params);
+  }
+
+
+  /**
+   * Set recurring status and cancel date if needed.
+   *
+   * @param object $param
+   * @param int $recurId
+   *
+   * @return mixed
+   */
+  private static function setRecurringStatus($param, $recurId) {
+    $params = array(
+      'sequential' => 1,
+      'id' => $recurId,
+      'contribution_status_id' => self::determineRecurringStatus($param->metadata->status),
+    );
+    if ($param->metadata->status == 'destroy') {
+      $params['cancel_date'] = $param->create_dt;
+    }
+    return civicrm_api3('ContributionRecur', 'create', $params);
+  }
+
+
+  /**
    * Set UTM in custom fields
    *
-   * @param $contributionId
-   * @param $fields
+   * @param int $contributionId
+   * @param object $fields
    *
    * @throws \CiviCRM_API3_Exception
    */
@@ -147,5 +217,17 @@ class CRM_Speakcivi_Logic_Contribution {
    */
   private static function determineStatus($status) {
     return self::$mapStatus[$status];
+  }
+
+
+  /**
+   * Determine contribution status for recurring based on status from param.
+   *
+   * @param string $status
+   *
+   * @return mixed
+   */
+  private static function determineRecurringStatus($status) {
+    return self::$mapRecurringStatus[$status];
   }
 }
