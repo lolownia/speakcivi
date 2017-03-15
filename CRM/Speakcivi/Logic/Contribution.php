@@ -16,7 +16,7 @@ class CRM_Speakcivi_Logic_Contribution {
   );
 
   private static $mapRecurringStatus = array(
-    'success' => 2, // pending
+    'success' => 5, // in progress
     'destroy' => 3, // cancelled
   );
 
@@ -101,7 +101,7 @@ class CRM_Speakcivi_Logic_Contribution {
       'trxn_id' => $param->metadata->transaction_id,
       'contribution_status_id' => self::determineStatus($param->metadata->status),
       'currency' => $param->metadata->currency,
-      'note' => $param->description,
+      'note' => $param->metadata->description,
     );
     if ($recurId) {
       $params['contribution_recur_id'] = $recurId;
