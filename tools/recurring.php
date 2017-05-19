@@ -46,8 +46,8 @@ $param = (object)array(
     'content' => 'coco4',
   ),
   'metadata' => (object)array(
-    "amount" =>  2000,
-    "amount_charged" => 50,
+    "amount" =>  "69",
+    "amount_charged" => "0",
     "currency" => "PLN",
     "card_type" => "visa",
     "payment_processor" => "stripe",
